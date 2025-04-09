@@ -1,5 +1,31 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Smooth scroll untuk navigasi
+    // Hamburger menu functionality
+    const hamburger = document.querySelector('.hamburger-menu');
+    const navLinks = document.querySelector('.nav-links');
+    const body = document.body;
+
+    hamburger.addEventListener('click', function() {
+        this.classList.toggle('active');
+        navLinks.classList.toggle('active');
+        
+        // Toggle body scroll when menu is open
+        if (navLinks.classList.contains('active')) {
+            body.style.overflow = 'hidden';
+        } else {
+            body.style.overflow = '';
+        }
+    });
+
+    // Close menu when clicking on a link
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', () => {
+            navLinks.classList.remove('active');
+            hamburger.classList.remove('active');
+            body.style.overflow = '';
+        });
+    });
+
+    // Smooth scroll for navigation
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             e.preventDefault();
@@ -13,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     top: targetElement.offsetTop - 80, // Sesuaikan dengan tinggi navbar
                     behavior: 'smooth'
                 });
-                
+
                 // Update URL tanpa reload halaman
                 history.pushState(null, null, targetId);
             }
@@ -44,10 +70,13 @@ document.addEventListener('DOMContentLoaded', function() {
             section.style.transform = 'translateY(50px)';
             section.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
         });
-        
+
         // Trigger animation for hero section
-        document.querySelector('.hero-content').style.opacity = '1';
-        document.querySelector('.hero-content').style.transform = 'translateY(0)';
+        const hero = document.querySelector('.hero-content');
+        if (hero) {
+            hero.style.opacity = '1';
+            hero.style.transform = 'translateY(0)';
+        }
     };
 
     // Navbar background change on scroll
@@ -62,12 +91,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // Initialize
+    // Inisialisasi animasi dan scroll
     setupAnimations();
     animateOnScroll();
     handleNavbarScroll();
 
-    // Event listeners
+    // Event listeners untuk scroll
     window.addEventListener('scroll', () => {
         animateOnScroll();
         handleNavbarScroll();
@@ -80,15 +109,15 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             const email = this.querySelector('input[type="email"]').value;
             const password = this.querySelector('input[type="password"]').value;
-            
+
             // Simpan ke localStorage (simulasi)
             localStorage.setItem('userEmail', email);
-            
+
             // Tampilkan pesan sukses
             alert('Thank you for signing up! You will receive our newsletter soon.');
             this.reset();
-            
-            // Scroll ke section tertentu setelah submit
+
+            // Scroll ke atas setelah submit
             window.scrollTo({
                 top: 0,
                 behavior: 'smooth'
@@ -102,7 +131,7 @@ document.addEventListener('DOMContentLoaded', function() {
         card.addEventListener('mouseenter', function() {
             this.style.boxShadow = '0 15px 30px rgba(0, 0, 0, 0.15)';
         });
-        
+
         card.addEventListener('mouseleave', function() {
             this.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.1)';
         });
