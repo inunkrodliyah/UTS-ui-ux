@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', function() {
         this.classList.toggle('active');
         navLinks.classList.toggle('active');
         
-        // Toggle body scroll when menu is open
         if (navLinks.classList.contains('active')) {
             body.style.overflow = 'hidden';
         } else {
@@ -25,6 +24,122 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Carousel functionality
+    function setupCarousel(carouselElements) {
+        carouselElements.forEach(carousel => {
+            const slides = carousel.querySelectorAll('.carousel-slide');
+            const prevBtn = carousel.parentElement.querySelector('.prev-btn');
+            const nextBtn = carousel.parentElement.querySelector('.next-btn');
+            const indicator = carousel.parentElement.querySelector('.carousel-indicator');
+            
+            // Product info elements
+            const productNames = {
+                'quote-carousel': [
+                    "Miss Dior Blooming Bouquet",
+                    "Dior Homme Parfum",
+                    "J'adore l'Or"
+                ],
+                'split-carousel-for-him': [
+                    "Sauvage Elixir",
+                    "Ambre Nuit",
+                    "Dior Homme Parfum"
+                ],
+                'split-carousel-for-her': [
+                    "J'adore Eau de Parfum Set",
+                    "Miss Dior Parfum",
+                    "Miss Dior Blooming Bouquet Set"
+                ]
+            };
+            const productAromas = {
+                'quote-carousel': [
+                    "Floral fragrance with notes of rose, damascus and peony",
+                    "Fragrance - Ambery, Woody and Floral Notes",
+                    "Fragrance - Solar and Intense Floral Notes"
+                ],
+                'split-carousel-for-him': [
+                    "Elixir - Spicy, Fresh and Woody Notes",
+                    "Amber floral fragrance with subtle spicy aroma",
+                    "Fragrance - Ambery, Woody and Floral Notes"
+                ],
+                'split-carousel-for-her': [
+                    "Eau de Parfum and Travel Spray",
+                    "Parfum - intense floral, fruity and woody notes",
+                    "Eau de Toilette and Travel Spray"
+                ]
+            };
+            const productDescs = {
+                'quote-carousel': [
+                    "A delicate and romantic fragrance that captures the essence of a blooming bouquet. Perfect for daytime wear and special occasions.",
+                    "A sophisticated scent that combines amber warmth with woody depth and floral elegance for the modern man.",
+                    "A luxurious golden fragrance that radiates with solar warmth and intense floral notes for a truly glamorous effect."
+                ],
+                'split-carousel-for-him': [
+                    "A bold and intense fragrance for the modern man. Combines spicy freshness with woody depth for a captivating scent.",
+                    "An elegant amber fragrance that blends floral notes with a subtle spicy warmth for a sophisticated evening scent.",
+                    "A refined masculine fragrance that combines woody depth with floral elegance and amber warmth."
+                ],
+                'split-carousel-for-her': [
+                    "A luxurious floral bouquet that celebrates femininity. The perfect combination for women who appreciate timeless elegance.",
+                    "An intense floral fragrance with fruity accents and woody depth, perfect for the confident modern woman.",
+                    "A delicate floral fragrance set that's perfect for travel, featuring the romantic Miss Dior Blooming Bouquet."
+                ]
+            };
+            const productPrices = {
+                'quote-carousel': [
+                    "Rp 1.800.000",
+                    "Rp 2.250.000",
+                    "Rp 5.050.000"
+                ]
+            };
+
+            let currentSlide = 0;
+            const container = carousel.closest('.feature-container, .split-container');
+            const carouselType = carousel.classList.contains('quote-carousel') ? 'quote-carousel' :
+                                container.querySelector('h2').textContent === 'For Him' ? 'split-carousel-for-him' : 'split-carousel-for-her';
+
+            function updateSlide() {
+                slides.forEach((slide, index) => {
+                    slide.classList.toggle('active', index === currentSlide);
+                });
+                
+                indicator.textContent = `${currentSlide + 1}/${slides.length}`;
+                
+                // Update product info based on current slide
+                if (container) {
+                    const productName = container.querySelector('.product-name');
+                    const productAroma = container.querySelector('.product-aroma');
+                    const productDesc = container.querySelector('.product-desc');
+                    const price = container.querySelector('.price');
+                    
+                    if (productName) productName.textContent = productNames[carouselType][currentSlide];
+                    if (productAroma) productAroma.textContent = productAromas[carouselType][currentSlide];
+                    if (productDesc) productDesc.textContent = productDescs[carouselType][currentSlide];
+                    if (price && carouselType === 'quote-carousel') price.textContent = productPrices[carouselType][currentSlide];
+                }
+            }
+
+            prevBtn.addEventListener('click', () => {
+                currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+                updateSlide();
+            });
+
+            nextBtn.addEventListener('click', () => {
+                currentSlide = (currentSlide + 1) % slides.length;
+                updateSlide();
+            });
+
+            // Initialize
+            updateSlide();
+        });
+    }
+
+    // Setup all carousels
+    const quoteCarousels = document.querySelectorAll('.quote-carousel');
+    const splitCarousels = document.querySelectorAll('.split-carousel');
+
+    setupCarousel(quoteCarousels);
+    setupCarousel(splitCarousels);
+
     // Smooth scroll for navigation
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
@@ -36,48 +151,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const targetElement = document.querySelector(targetId);
             if (targetElement) {
                 window.scrollTo({
-                    top: targetElement.offsetTop - 80, // Sesuaikan dengan tinggi navbar
+                    top: targetElement.offsetTop - 80,
                     behavior: 'smooth'
                 });
 
-                // Update URL tanpa reload halaman
                 history.pushState(null, null, targetId);
             }
         });
     });
-
-    // Animasi scroll untuk sections
-    const animateOnScroll = function() {
-        const sections = document.querySelectorAll('.product-section, .collection-section, .gender-section, .cta-section');
-        
-        sections.forEach(section => {
-            const sectionTop = section.getBoundingClientRect().top;
-            const windowHeight = window.innerHeight;
-            
-            if (sectionTop < windowHeight - 100) {
-                section.style.opacity = '1';
-                section.style.transform = 'translateY(0)';
-            }
-        });
-    };
-
-    // Set initial styles for animation
-    const setupAnimations = function() {
-        const sections = document.querySelectorAll('.product-section, .collection-section, .gender-section, .cta-section');
-        
-        sections.forEach(section => {
-            section.style.opacity = '0';
-            section.style.transform = 'translateY(50px)';
-            section.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
-        });
-
-        // Trigger animation for hero section
-        const hero = document.querySelector('.hero-content');
-        if (hero) {
-            hero.style.opacity = '1';
-            hero.style.transform = 'translateY(0)';
-        }
-    };
 
     // Navbar background change on scroll
     const handleNavbarScroll = function() {
@@ -91,16 +172,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // Inisialisasi animasi dan scroll
-    setupAnimations();
-    animateOnScroll();
+    // Initialize
     handleNavbarScroll();
-
-    // Event listeners untuk scroll
-    window.addEventListener('scroll', () => {
-        animateOnScroll();
-        handleNavbarScroll();
-    });
+    window.addEventListener('scroll', handleNavbarScroll);
 
     // Form submission handling
     const ctaForm = document.querySelector('.cta-form');
@@ -110,30 +184,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const email = this.querySelector('input[type="email"]').value;
             const password = this.querySelector('input[type="password"]').value;
 
-            // Simpan ke localStorage (simulasi)
             localStorage.setItem('userEmail', email);
-
-            // Tampilkan pesan sukses
             alert('Thank you for signing up! You will receive our newsletter soon.');
             this.reset();
-
-            // Scroll ke atas setelah submit
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
         });
     }
-
-    // Product hover effect
-    const productCards = document.querySelectorAll('.product-card, .gender-card');
-    productCards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            this.style.boxShadow = '0 15px 30px rgba(0, 0, 0, 0.15)';
-        });
-
-        card.addEventListener('mouseleave', function() {
-            this.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.1)';
-        });
-    });
 });
